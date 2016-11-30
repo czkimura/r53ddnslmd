@@ -55,7 +55,12 @@ class Route53Operator {
 
   deleteRecordByIP(ipList) {
     return this.getResourceRecordSetsByIP(ipList).then((resourceRecordSets) => {
+      const skipKeyword = '--master';
       return resourceRecordSets.map((resourceRecordSet) => {
+        if (resourceRecordSet.Name.match(skipKeyword) !== null) {
+          logger.info('skip by keyword', {name: resourceRecordSet.Name, keyword: skipKeyword})
+          return ;
+        }
         return this.changeResourceRecordSet('DELETE', resourceRecordSet);
       });
     });
